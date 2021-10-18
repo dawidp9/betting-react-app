@@ -1,65 +1,36 @@
 import { useFetchParticipantQuery } from '@features/betting_api/betting_api_slice';
-import { CircularProgress, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
-import { RacePositions } from '@pages/race_page/race_page';
+import { CircularProgress } from '@mui/material';
+import styled from 'styled-components';
 
 interface IParticipantProps {
   participantId: number;
-  firstPositionEnabled: boolean;
-  secondPositionEnabled: boolean;
-  thirdPositionEnabled: boolean;
-  setPosition: (participantId: number, position: string) => void;
 }
 
-const Participant: React.FC<IParticipantProps> = ({
-  participantId,
-  firstPositionEnabled,
-  secondPositionEnabled,
-  thirdPositionEnabled,
-  setPosition,
-}) => {
+const Participant: React.FC<IParticipantProps> = ({ participantId }) => {
   const { data = { body: '' }, isFetching } = useFetchParticipantQuery(participantId);
 
   if (isFetching)
     return (
-      <div>
+      <Row>
         <CircularProgress />
-      </div>
+      </Row>
     );
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = (event.target as HTMLInputElement).value;
-    setPosition(participantId, value);
-  };
 
   const { body } = data;
   return (
-    <div>
+    <Row>
       <h4>{body}</h4>
-      <FormControl component="fieldset">
-        <FormLabel component="legend">Position</FormLabel>
-        <RadioGroup row onChange={handleChange}>
-          <FormControlLabel
-            disabled={firstPositionEnabled}
-            value={RacePositions.FIRST}
-            control={<Radio />}
-            label="First"
-          />
-          <FormControlLabel
-            disabled={secondPositionEnabled}
-            value={RacePositions.SECOND}
-            control={<Radio />}
-            label="Second"
-          />
-          <FormControlLabel
-            disabled={thirdPositionEnabled}
-            value={RacePositions.THIRD}
-            control={<Radio />}
-            label="Third"
-          />
-        </RadioGroup>
-      </FormControl>
-    </div>
+    </Row>
   );
 };
+
+const Row = styled.div<{ withName?: boolean }>`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  min-width: 300px;
+  height: 65px;
+`;
 
 export default Participant;

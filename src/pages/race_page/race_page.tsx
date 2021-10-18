@@ -1,23 +1,11 @@
 import { useParams } from 'react-router-dom';
 import { IRaceRouteParams } from '@router/router_paths';
 import { useFetchRaceQuery } from '@features/betting_api/betting_api_slice';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, FormControlLabel, Radio, RadioGroup, TextField } from '@mui/material';
 import { RequestStatuses } from '@utils/request_statuses/request_statuses';
 import Participant from '@molecules/participant/participant';
 import styled from 'styled-components';
-import { useState } from 'react';
-
-export const enum RacePositions {
-  FIRST = 'first',
-  SECOND = 'second',
-  THIRD = 'third',
-}
-
-interface ISelectedPositions {
-  first: undefined | number;
-  second: undefined | number;
-  third: undefined | number;
-}
+import { useForm } from 'react-hook-form';
 
 const RacePage: React.FC = () => {
   const { raceId } = useParams<IRaceRouteParams>();
@@ -28,10 +16,8 @@ const RacePage: React.FC = () => {
     error,
   } = useFetchRaceQuery(raceId);
 
-  const [selectedPositions, setSelectedPositions] = useState<ISelectedPositions>({
-    first: undefined,
-    second: undefined,
-    third: undefined,
+  const { setValue, watch } = useForm({
+    defaultValues: { bettingAmount: '', first: '', second: '', third: '' },
   });
 
   if (isFetching) return <CircularProgress />;
@@ -41,57 +27,75 @@ const RacePage: React.FC = () => {
     return <h1>Sorry, we couldn't fetch info about this race</h1>;
   }
 
-  const clearFirstPosition = () => setSelectedPositions({ ...selectedPositions, first: undefined });
-  const clearSecondPosition = () => setSelectedPositions({ ...selectedPositions, second: undefined });
-  const clearThirdPosition = () => setSelectedPositions({ ...selectedPositions, third: undefined });
-
-  const handlePositionChange = (participantId: number, position: string) => {
-    switch (position) {
-      case RacePositions.FIRST: {
-        setSelectedPositions({ ...selectedPositions, first: participantId });
-        if (selectedPositions.second === participantId) clearSecondPosition();
-        if (selectedPositions.third === participantId) clearThirdPosition();
-        break;
-      }
-      case RacePositions.SECOND: {
-        setSelectedPositions({ ...selectedPositions, second: participantId });
-        if (selectedPositions.first === participantId) clearFirstPosition();
-        if (selectedPositions.third === participantId) clearThirdPosition();
-        break;
-      }
-      case RacePositions.THIRD: {
-        setSelectedPositions({ ...selectedPositions, third: participantId });
-        if (selectedPositions.first === participantId) clearFirstPosition();
-        if (selectedPositions.second === participantId) clearSecondPosition();
-        break;
-      }
-      default:
-        break;
-    }
+  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setValue('bettingAmount', event.target.value);
   };
 
-  const isFirstPositionSelected = !!selectedPositions.first;
-  const isSecondPositionSelected = !!selectedPositions.second;
-  const isThirdPositionSelected = !!selectedPositions.third;
-
   const { name, active, participants } = data;
+
+  const firstParticipant = +watch('first');
+  const secondParticipant = +watch('second');
+  const thirdParticipant = +watch('third');
 
   return (
     <ContentWrapper>
       <h1>{name}</h1>
       <h3>{active ? 'Active' : 'Inactive'}</h3>
       <div>
+        <TextField type="number" label="Betting amount" variant="outlined" onChange={handleAmountChange} />
         <h3>Race participants:</h3>
-        {participants.map((participantId) => (
-          <Participant
-            key={participantId}
-            participantId={participantId}
-            firstPositionEnabled={participantId !== selectedPositions.first && isFirstPositionSelected}
-            secondPositionEnabled={participantId !== selectedPositions.second && isSecondPositionSelected}
-            thirdPositionEnabled={participantId !== selectedPositions.third && isThirdPositionSelected}
-            setPosition={handlePositionChange}
-          />
-        ))}
+        <Row>
+          <div>
+            {participants.map((participantId) => (
+              <Participant key={participantId} participantId={participantId} />
+            ))}
+          </div>
+          <RadioGroup
+            onChange={(event) => {
+              setValue('first', (event.target as HTMLInputElement).value);
+            }}
+          >
+            {participants.map((participantId) => (
+              <FormControlLabel
+                disabled={secondParticipant === participantId || thirdParticipant === participantId}
+                key={participantId}
+                value={participantId}
+                control={<StyledRadio />}
+                label="Winner"
+              />
+            ))}
+          </RadioGroup>
+          <RadioGroup
+            onChange={(event) => {
+              setValue('second', (event.target as HTMLInputElement).value);
+            }}
+          >
+            {participants.map((participantId) => (
+              <FormControlLabel
+                disabled={firstParticipant === participantId || thirdParticipant === participantId}
+                key={participantId}
+                value={participantId}
+                control={<StyledRadio />}
+                label="Second"
+              />
+            ))}
+          </RadioGroup>
+          <RadioGroup
+            onChange={(event) => {
+              setValue('third', (event.target as HTMLInputElement).value);
+            }}
+          >
+            {participants.map((participantId) => (
+              <FormControlLabel
+                disabled={firstParticipant === participantId || secondParticipant === participantId}
+                key={participantId}
+                value={participantId}
+                control={<StyledRadio />}
+                label="Third"
+              />
+            ))}
+          </RadioGroup>
+        </Row>
       </div>
     </ContentWrapper>
   );
@@ -99,6 +103,16 @@ const RacePage: React.FC = () => {
 
 const ContentWrapper = styled.div`
   margin: 24px 5%;
+`;
+
+const Row = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-self: center;
+`;
+
+const StyledRadio = styled(Radio)`
+  height: 65px;
 `;
 
 export default RacePage;
