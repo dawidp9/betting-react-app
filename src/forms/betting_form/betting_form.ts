@@ -15,11 +15,22 @@ export interface IBettingFormFields {
   [BettingFormFields.THIRD_PARTICIPANT]: string;
 }
 
+const { requiredMsg, invalidBetAmountMsg } = {
+  requiredMsg: 'This field is required',
+  invalidBetAmountMsg: 'Bet amount must be greater than 0',
+};
+
 export const bettingFormResolver = yupResolver(
   yup.object().shape({
-    [BettingFormFields.BETTING_AMOUNT]: yup.string().required(),
-    [BettingFormFields.FIRST_PARTICIPANT]: yup.string().required(),
-    [BettingFormFields.SECOND_PARTICIPANT]: yup.string().required(),
-    [BettingFormFields.THIRD_PARTICIPANT]: yup.string().required(),
+    [BettingFormFields.BETTING_AMOUNT]: yup
+      .string()
+      .required(requiredMsg)
+      .test('invalidBetAmount', invalidBetAmountMsg, (val) => {
+        if (!val) return true;
+        return parseFloat(val) > 0;
+      }),
+    [BettingFormFields.FIRST_PARTICIPANT]: yup.string().required(requiredMsg),
+    [BettingFormFields.SECOND_PARTICIPANT]: yup.string().required(requiredMsg),
+    [BettingFormFields.THIRD_PARTICIPANT]: yup.string().required(requiredMsg),
   }),
 );

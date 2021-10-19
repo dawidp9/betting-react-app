@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { bettingApiSlice } from '@features/betting_api/betting_api_slice';
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import bettingRacesReducer from '@features/betting_races/betting_races_slice';
 
 const persistConfig = {
   key: 'root',
@@ -13,6 +14,7 @@ const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     [bettingApiSlice.reducerPath]: bettingApiSlice.reducer,
+    bettingRaces: bettingRacesReducer,
   }),
 );
 
