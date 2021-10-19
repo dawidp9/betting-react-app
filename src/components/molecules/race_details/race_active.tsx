@@ -7,6 +7,8 @@ import styled from 'styled-components';
 import { BettingFormFields, bettingFormResolver, IBettingFormFields } from '@forms/betting_form/betting_form';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { ContentWrapper } from '@molecules/race_details/shared';
+import { useAppDispatch } from '@hooks/redux_hooks/redux_hooks';
+import { createRaceBet } from '@features/betting_races/betting_races_slice';
 
 interface IRaceActiveProps {
   raceId: string;
@@ -14,7 +16,9 @@ interface IRaceActiveProps {
   participants: number[];
 }
 
-const RaceActive: React.FC<IRaceActiveProps> = ({ raceName, participants }) => {
+const RaceActive: React.FC<IRaceActiveProps> = ({ raceId, raceName, participants }) => {
+  const dispatch = useAppDispatch();
+
   const initialFormState = {
     [BettingFormFields.BETTING_AMOUNT]: '',
     [BettingFormFields.FIRST_PARTICIPANT]: '',
@@ -37,9 +41,16 @@ const RaceActive: React.FC<IRaceActiveProps> = ({ raceName, participants }) => {
   const secondParticipant = +watch(BettingFormFields.SECOND_PARTICIPANT);
   const thirdParticipant = +watch(BettingFormFields.THIRD_PARTICIPANT);
 
-  const onBetSubmit: SubmitHandler<IBettingFormFields> = (formData) => {
-    console.log('handleFormSubmit', formData);
-  };
+  const onBetSubmit: SubmitHandler<IBettingFormFields> = (formData) =>
+    dispatch(
+      createRaceBet({
+        raceId: +raceId,
+        firstParticipantId: +formData.firstParticipant,
+        secondParticipantId: +formData.secondParticipant,
+        thirdParticipantId: +formData.thirdParticipant,
+        betAmount: +formData.bettingAmount,
+      }),
+    );
 
   return (
     <ContentWrapper>

@@ -2,6 +2,8 @@ import styled from 'styled-components';
 import { Paper } from '@mui/material';
 import { PrimaryLinkButton } from '@atoms/buttons/buttons';
 import routerPaths from '@router/router_paths';
+import { useAppSelector } from '@hooks/redux_hooks/redux_hooks';
+import { selectBetByRaceId } from '@features/betting_races/betting_races_slice';
 
 interface IRaceBoxProps {
   raceId: number;
@@ -10,8 +12,10 @@ interface IRaceBoxProps {
 }
 
 const RaceBox: React.FC<IRaceBoxProps> = ({ raceId, name, active }) => {
-  const labelText = active ? '🟢 Active' : '🔴 Inactive';
-  const buttonText = active ? 'place bets' : 'see details';
+  const raceBet = useAppSelector(selectBetByRaceId(`${raceId}`));
+
+  const labelText = raceBet ? '🟠 Active & Bet Placed' : active ? '🟢 Active' : '🔴 Inactive';
+  const buttonText = raceBet ? 'menage bet' : active ? 'place bet' : 'see details';
 
   return (
     <RaceWrapper variant="outlined">

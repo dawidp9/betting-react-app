@@ -19,4 +19,12 @@ const PrimaryButton = styled(Button).attrs({
   }
 `;
 
-export { PrimaryLinkButton, PrimaryButton };
+const SecondaryButton = styled(Button).attrs({
+  variant: 'outlined',
+})`
+  && {
+    text-transform: capitalize;
+  }
+`;
+
+export { PrimaryLinkButton, PrimaryButton, SecondaryButton };
