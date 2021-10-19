@@ -11,26 +11,25 @@ const Participant: React.FC<IParticipantProps> = ({ participantId }) => {
 
   if (isFetching)
     return (
-      <Row>
+      <ParticipantWrapper>
         <CircularProgress />
-      </Row>
+      </ParticipantWrapper>
     );
 
   const { body } = data;
   return (
-    <Row>
+    <ParticipantWrapper>
       <h4>{body}</h4>
-    </Row>
+    </ParticipantWrapper>
   );
 };
 
-const Row = styled.div<{ withName?: boolean }>`
+const ParticipantWrapper = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   align-items: center;
-  min-width: 300px;
-  height: 65px;
+  min-width: 260px;
+  height: 40px;
 `;
 
 export default Participant;

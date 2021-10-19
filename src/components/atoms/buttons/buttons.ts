@@ -12,7 +12,7 @@ const PrimaryLinkButton = styled(Button).attrs({
 `;
 
 const PrimaryButton = styled(Button).attrs({
-  variant: 'outlined',
+  variant: 'contained',
 })`
   && {
     text-transform: capitalize;

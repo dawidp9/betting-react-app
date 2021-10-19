@@ -10,8 +10,8 @@ interface IRaceBoxProps {
 }
 
 const RaceBox: React.FC<IRaceBoxProps> = ({ raceId, name, active }) => {
-  const labelText = active ? 'active' : 'inactive';
-  const buttonText = active ? 'place bets' : 'see detials';
+  const labelText = active ? '🟢 Active' : '🔴 Inactive';
+  const buttonText = active ? 'place bets' : 'see details';
 
   return (
     <RaceWrapper variant="outlined">
@@ -26,7 +26,8 @@ const RaceBox: React.FC<IRaceBoxProps> = ({ raceId, name, active }) => {
 
 const RaceWrapper = styled(Paper)`
   margin: 24px 0;
-  padding: 8px;
+  padding: 8px 24px 24px 24px;
+  min-width: 300px;
 `;
 
 export default RaceBox;

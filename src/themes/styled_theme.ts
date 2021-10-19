@@ -1,8 +1,9 @@
 export default {
   colors: {
     white: '#FFFFFF',
+    black: '#000000',
     dark: '#1F1F1F',
-    red: '#f94144',
-    green: '#43aa8b',
+    red: '#F94144',
+    green: '#43AA8B',
   },
 };
